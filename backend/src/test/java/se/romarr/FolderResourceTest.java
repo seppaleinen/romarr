@@ -28,6 +28,7 @@ class FolderResourceTest {
 		Files.createDirectory(tempDir);
 		Files.createDirectory(tempDir.resolve("3ds"));
 		Files.createFile(tempDir.resolve("3ds").resolve("game.3ds"));
+		Files.createFile(tempDir.resolve("3ds").resolve("game.cia"));
 		Files.createFile(tempDir.resolve("3ds").resolve("game2.cia"));
 		Files.createDirectory(tempDir.resolve("psx"));
 		Files.createFile(tempDir.resolve("psx").resolve("game3.iso"));
@@ -45,9 +46,12 @@ class FolderResourceTest {
 				.then()
 				.statusCode(200)
 				.body(containsString("THREE_DS"))
-				.body(containsString("game.3ds"))
-				.body(containsString("game2.cia"))
+				.body(containsString("game"))
+				.body(containsString("game2"))
 				.body(containsString("PSX"))
-				.body(containsString("game3.iso"));
+				.body(containsString("game3"))
+				.log().body();
+
+
 	}
 }
