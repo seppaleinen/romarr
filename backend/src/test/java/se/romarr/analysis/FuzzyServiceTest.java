@@ -1,6 +1,6 @@
 package se.romarr.analysis;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -8,13 +8,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
+
+import io.quarkiverse.wiremock.devservice.ConnectWireMock;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -22,14 +22,31 @@ import se.romarr.tgdb.Data;
 import se.romarr.tgdb.GameDump;
 import se.romarr.tgdb.TGDBDataDumpService;
 import se.romarr.tgdb.TGDBGame;
+import wiremock.com.fasterxml.jackson.databind.JsonNode;
+import wiremock.com.fasterxml.jackson.databind.ObjectMapper;
 
 @QuarkusTest
+@ConnectWireMock
 class FuzzyServiceTest {
 	@Inject
 	FuzzyService fuzzyService;
 	@InjectMock
 	@RestClient
 	TGDBDataDumpService tgdbDataDumpService;
+
+	WireMock wiremock;
+
+	@BeforeEach
+	public void setup() {
+		GameDump dump = new GameDump(200, "OK", "1", new Data(5,
+				List.of(createGame(1, "game1"))));
+		ObjectMapper mapper = new ObjectMapper();
+
+		wiremock.register(WireMock.get("/json/database-latest.json")
+				.willReturn(WireMock.aResponse()
+						.withHeader("Content-Type", "application/json")
+						.withJsonBody(mapper.convertValue(dump, JsonNode.class))));
+	}
 
 	@Test
 	void halo() {

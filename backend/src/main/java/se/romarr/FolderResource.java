@@ -14,7 +14,6 @@ import se.romarr.analysis.FuzzyService;
 import se.romarr.domain.GameSystem;
 import se.romarr.folder.FolderService;
 import se.romarr.tgdb.TGDBDataDumpService;
-import se.romarr.tgdb.TGDBGame;
 
 @Path("/folder")
 public class FolderResource {

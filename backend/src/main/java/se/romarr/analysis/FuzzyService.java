@@ -8,10 +8,10 @@ import se.romarr.persistence.FuzzyTitle;
 
 @ApplicationScoped
 public class FuzzyService {
-	private StartupBean startupBean;
+	private final StartupBean startupBean;
 
 	@Inject
-	public FuzzyService(StartupBean startupBean) {
+	public FuzzyService(final StartupBean startupBean) {
 		this.startupBean = startupBean;
 	}
 

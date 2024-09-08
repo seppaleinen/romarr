@@ -1,22 +1,21 @@
 package se.romarr;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
-import io.quarkus.runtime.Startup;
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.WebApplicationException;
 import se.romarr.persistence.FuzzyTitle;
 import se.romarr.tgdb.TGDBDataDumpService;
 import se.romarr.tgdb.TGDBGame;
 
-@ApplicationScoped
-@Startup
+@Singleton
 public class StartupBean {
 	private static final AtomicBoolean initialized = new AtomicBoolean(false);
 
@@ -27,17 +26,25 @@ public class StartupBean {
 		this.tgdbDataDumpService = tgdbDataDumpService;
 	}
 
-	@PostConstruct
 	public void initialize() {
 		StopWatch persistenceWatch = StopWatch.createStarted();
 
-		List<TGDBGame> games = tgdbDataDumpService.getDump().data().games();
+		if (FuzzyTitle.count() == 0) {
+			List<TGDBGame> games = getGames();
 
-		persistFuzzies(games);
+			persistFuzzies(games);
 
-		initialized.set(true);
+			System.out.println("Persisted " + games.size() + " games in " + persistenceWatch.getTime() + "ms");
+		}
+	}
 
-		System.out.println("Persisted " + games.size() + " games in " + persistenceWatch.getTime() + "ms");
+	public List<TGDBGame> getGames() {
+		try {
+			return tgdbDataDumpService.getDump().data().games();
+		} catch (WebApplicationException e) {
+			System.err.println("Could not get data dump from thegamedb: " + e.getMessage());
+			return new ArrayList<>();
+		}
 	}
 
 	@Transactional
@@ -51,6 +58,9 @@ public class StartupBean {
 	}
 
 	public boolean isReady() {
-		return initialized.get();
+		if (!initialized.get()) {
+			initialize();
+		}
+		return true;
 	}
 }
