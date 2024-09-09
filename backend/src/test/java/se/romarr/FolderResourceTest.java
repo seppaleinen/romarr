@@ -73,8 +73,7 @@ class FolderResourceTest {
 				.body(containsString("game"))
 				.body(containsString("game2"))
 				.body(containsString("PSX"))
-				.body(containsString("game3"))
-				.log().body();
+				.body(containsString("game3"));
 
 	}
 
