@@ -1,4 +1,4 @@
-package se.romarr.folder.visitors;
+package se.romarr.scanner.folder.visitors;
 
 import java.nio.file.FileVisitResult;
 import java.nio.file.Path;

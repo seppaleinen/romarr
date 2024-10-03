@@ -2,6 +2,7 @@ package se.romarr;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.time.StopWatch;
@@ -49,12 +50,15 @@ public class StartupBean {
 
 	@Transactional
 	public void persistFuzzies(List<TGDBGame> games) {
-		FuzzyTitle.persist(games
-				.stream()
-				.map(TGDBGame::gameTitle)
-				.distinct()
-				.map(FuzzyTitle::new)
-				.filter(entity -> !entity.isPersistent()));
+		if (!games.isEmpty()) {
+			FuzzyTitle.persist(games
+					.stream()
+					.map(TGDBGame::gameTitle)
+					.filter(Objects::nonNull)
+					.distinct()
+					.map(FuzzyTitle::new)
+					.filter(entity -> !entity.isPersistent()));
+		}
 	}
 
 	public boolean isReady() {

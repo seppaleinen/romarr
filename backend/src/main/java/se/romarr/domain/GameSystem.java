@@ -10,6 +10,7 @@ public record GameSystem(Type type, List<Game> games) {
 		THREE_DS("3DS"),
 		SNES("SNES", "SUPER NINTENDO"),
 		PSX("PSX", "PLAYSTATION"),
+		SWITCH("Switch"),
 		PS3("PS3", "PLAYSTATION 3");
 
 		private List<String> names;

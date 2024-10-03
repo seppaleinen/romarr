@@ -1,4 +1,4 @@
-package se.romarr.folder;
+package se.romarr.scanner.folder;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,22 +11,24 @@ import java.util.stream.Collectors;
 import jakarta.enterprise.context.ApplicationScoped;
 import se.romarr.domain.Game;
 import se.romarr.domain.GameSystem;
-import se.romarr.folder.visitors.PSXVisitor;
-import se.romarr.folder.visitors.RootVisitor;
-import se.romarr.folder.visitors.ThreeDSVisitor;
+import se.romarr.scanner.folder.visitors.PSXVisitor;
+import se.romarr.scanner.folder.visitors.RootVisitor;
+import se.romarr.scanner.folder.visitors.SwitchVisitor;
+import se.romarr.scanner.folder.visitors.ThreeDSVisitor;
 import se.romarr.persistence.PersistenceService;
 
 @ApplicationScoped
 public class FolderService {
-	private PersistenceService persistenceService;
-	private RootVisitor rootVisitor;
+	private final PersistenceService persistenceService;
+	private final RootVisitor rootVisitor;
 
-	public FolderService(PersistenceService persistenceService) {
+	public FolderService(PersistenceService persistenceService, PSXVisitor psxVisitor, ThreeDSVisitor threeDSVisitor, SwitchVisitor switchVisitor) {
 		this.persistenceService = persistenceService;
 		this.rootVisitor = new RootVisitor(
 				List.of(
-						new PSXVisitor(persistenceService),
-						new ThreeDSVisitor(persistenceService)));
+						psxVisitor,
+						threeDSVisitor,
+						switchVisitor));
 	}
 
 	public Set<GameSystem> doStuff(String folder) {
@@ -38,7 +40,7 @@ public class FolderService {
 		return persistenceService.getGames()
 				.entrySet()
 				.stream()
-				.map(a -> new GameSystem(a.getKey(), a.getValue().stream().map(b -> new Game(b, new ArrayList<>())).toList()))
+				.map(a -> new GameSystem(a.getKey(), a.getValue().stream().map(Game::new).toList()))
 				.collect(Collectors.toSet());
 	}
 }

@@ -1,4 +1,4 @@
-package se.romarr;
+package se.romarr.api;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 

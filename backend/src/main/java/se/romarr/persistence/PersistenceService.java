@@ -4,28 +4,26 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import io.vertx.core.impl.ConcurrentHashSet;
 import jakarta.enterprise.context.ApplicationScoped;
 import se.romarr.domain.GameSystem;
 
 @ApplicationScoped
 public class PersistenceService {
-	private static final Map<GameSystem.Type, Map<String, List<String>>> games = new ConcurrentHashMap<>();
+	private static final Map<GameSystem.Type, Set<String>> games = new ConcurrentHashMap<>();
 
-	public void addGame(GameSystem.Type system, String gameName, Path file) {
-		System.out.println("Adding game: " + gameName + " to system: " + system);
-		games.computeIfAbsent(system, a -> new ConcurrentHashMap<>())
-				.computeIfAbsent(gameName, a -> new ArrayList<>())
-				.add(gameName);
+	public void addGame(GameSystem.Type system, Path file) {
+		String fileName = file.getFileName().toString();
+		System.out.println("Adding game: " + fileName + " to system: " + system);
+		games.computeIfAbsent(system, a -> new ConcurrentHashSet<>()).add(fileName);
 
 	}
 
-	public Map<GameSystem.Type, List<String>> getGames() {
-		return games.entrySet()
-				.stream()
-				.map(a -> Map.entry(a.getKey(), new ArrayList<>(a.getValue().keySet())))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+	public Map<GameSystem.Type, Set<String>> getGames() {
+		return games;
 	}
 }

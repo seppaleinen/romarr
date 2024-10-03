@@ -1,14 +1,18 @@
-package se.romarr.folder.visitors;
+package se.romarr.scanner.folder.visitors;
 
 import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
+import java.util.Set;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import se.romarr.analysis.FuzzyService;
 import se.romarr.domain.GameSystem;
-import se.romarr.folder.GameUtil;
+import se.romarr.scanner.folder.GameUtil;
 import se.romarr.persistence.PersistenceService;
 
+@ApplicationScoped
 public class ThreeDSVisitor extends CustomVisitor {
 	private static final String ROOT_FOLDER = "3DS";
 	private static final List<String> ACCEPTED_FILES = List.of(".3ds", ".cia");
@@ -28,7 +32,7 @@ public class ThreeDSVisitor extends CustomVisitor {
 	public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
 		if(ACCEPTED_FILES.stream().anyMatch(file.getFileName().toString().toLowerCase()::endsWith)) {
 			System.out.println("3DS: " + file);
-			persistenceService.addGame(GameSystem.Type.THREE_DS, GameUtil.tryToGetGameName(file), file);
+			persistenceService.addGame(GameSystem.Type.THREE_DS, file);
 		}
 		return FileVisitResult.CONTINUE;
 	}

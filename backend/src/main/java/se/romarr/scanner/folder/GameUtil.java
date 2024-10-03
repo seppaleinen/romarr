@@ -1,4 +1,4 @@
-package se.romarr.folder;
+package se.romarr.scanner.folder;
 
 import java.nio.file.Path;
 import java.util.regex.Matcher;
@@ -18,7 +18,7 @@ public final class GameUtil {
 		fileName = removePattern(fileName, trailingNoisePattern);
 		fileName = removePattern(fileName, headingNoisePattern);
 		fileName = removePattern(fileName, extensionPattern);
-		fileName = fileName.replaceAll("\\.", " ");
+		fileName = fileName.replaceAll("[._]", " ");
 		return fileName;
 	}
 

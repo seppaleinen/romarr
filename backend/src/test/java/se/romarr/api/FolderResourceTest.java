@@ -1,4 +1,4 @@
-package se.romarr;
+package se.romarr.api;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.containsString;
